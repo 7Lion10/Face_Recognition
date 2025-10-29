@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recognition Result</title>
+
+  <!-- Import CSS and JS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+<body class="result-page">
+
+  <div class="result-container">
+    <h2 class="result-title">Recognition Result</h2>
+
+    <!-- Display uploaded image -->
+    <img src="{{ url_for('static', filename='uploads/' + image) }}" 
+         alt="Uploaded Image" class="result-image">
+
+    <!-- Recognition details -->
+    <h3 class="person-name">Name: {{ name }}</h3>
+
+    {% if confidence %}
+<div class="confidence-container">
+  <p>Confidence: <span id="confidence-value">{{ confidence }}</span></p>
+  <div class="progress-bar">
+    <div class="progress" id="progress" data-confidence="{{ confidence }}"></div>
+  </div>
+</div>
+{% endif %}
+
+
+    <!-- Add to Database or Rename -->
+    {% if name == "Unknown" %}
+    <div class="add-form">
+      <form action="/add" method="POST">
+        <input type="hidden" name="image" value="{{ image }}">
+        <input type="text" name="name" placeholder="Enter name to save" required>
+        <button type="submit">Add to Database</button>
+      </form>
+    </div>
+    {% else %}
+    <div class="rename-form">
+      <form action="/rename" method="POST">
+        <input type="hidden" name="old_name" value="{{ name }}">
+        <input type="hidden" name="image" value="{{ image }}">
+        <input type="text" name="new_name" placeholder="Enter correct name" required>
+        <button type="submit">Rename</button>
+      </form>
+    </div>
+    {% endif %}
+
+    <!-- Back button -->
+    <a href="{{ url_for('index') }}" class="back-btn">Back</a>
+  </div>
+
+</body>
+</html>
