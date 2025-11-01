@@ -1,4 +1,46 @@
-/* 🌈 Smooth Breathing Animated Gradient Background */
+/* 🌈 THEME VARIABLES */
+:root {
+  --bg-color: linear-gradient(-45deg, #74ebd5, #ACB6E5, #89f7fe, #66a6ff, #fcb69f, #ffecd2);
+  --text-color: #1a1a1a;
+  --card-bg: rgba(255, 255, 255, 0.3);
+  --button-bg: #3c07ec;
+  --button-hover: #43a047;
+  --input-bg: #fff;
+  --progress-bar-bg: rgba(0, 0, 0, 0.1);
+  --progress-fill: linear-gradient(90deg, #00c6ff, #0072ff);
+}
+
+/* 🌙 DARK MODE VARIABLES */
+body.dark-mode {
+  --bg-color: linear-gradient(-45deg, #1f1f1f, #2c2c2c, #242526, #1a1a1a);
+  --text-color: #ffffff;
+  --card-bg: rgba(45, 45, 45, 0.7);
+  --button-bg: #3a8ef6;
+  --button-hover: #00b894;
+  --input-bg: #2a2a2a;
+  --progress-bar-bg: rgba(255, 255, 255, 0.15);
+  --progress-fill: linear-gradient(90deg, #00e6ff, #00bfff);
+  animation: smoothGradientDark 25s ease-in-out infinite;
+}
+
+/* 🌌 DARK MODE GRADIENT ANIMATION */
+@keyframes smoothGradientDark {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 🌬️ Breathing Effect */
+@keyframes breathing {
+  0%, 100% {
+    box-shadow: 0 0 10px #007bff, 0 0 20px #00e6ff;
+  }
+  50% {
+    box-shadow: 0 0 25px #00bfff, 0 0 50px #00e6ff;
+  }
+}
+
+/* 🌄 GLOBAL BODY */
 body {
   font-family: 'Poppins', sans-serif;
   height: 100vh;
@@ -7,27 +49,21 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(-45deg, #74ebd5, #ACB6E5, #89f7fe, #66a6ff, #fcb69f, #ffecd2);
+  color: var(--text-color);
+  background: var(--bg-color);
   background-size: 400% 400%;
   animation: smoothGradient 25s ease-in-out infinite;
-  transition: background 2s ease-in-out;
+  transition: background 2s ease-in-out, color 0.4s ease;
 }
 
-/* 🌌 Smooth gradient motion */
+/* 🌌 SMOOTH GRADIENT ANIMATION */
 @keyframes smoothGradient {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-/* 🌌 Breathing Gradient Motion */
-@keyframes breathe {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* ✨ Title Styling */
+/* ✨ TITLE */
 .title {
   font-size: 2.2rem;
   text-align: center;
@@ -42,10 +78,10 @@ body {
   50% { text-shadow: 0 0 20px #35f107, 0 0 30px #c2e9fb; }
 }
 
-/* 📦 Upload Box */
+/* 📦 UPLOAD BOX */
 .upload-box {
   position: relative;
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--card-bg);
   backdrop-filter: blur(15px);
   padding: 45px;
   border-radius: 25px;
@@ -55,6 +91,11 @@ body {
   animation: fadeIn 1.5s ease;
   transition: all 0.5s ease;
   overflow: hidden;
+}
+
+/* 🫧 Breathing in dark mode for upload box */
+body.dark-mode .upload-box {
+  animation: breathing 6s ease-in-out infinite;
 }
 
 .upload-box::before {
@@ -73,14 +114,8 @@ body {
 }
 
 @keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.4;
-    filter: blur(10px);
-  }
-  50% {
-    opacity: 1;
-    filter: blur(20px);
-  }
+  0%, 100% { opacity: 0.4; filter: blur(10px); }
+  50% { opacity: 1; filter: blur(20px); }
 }
 
 .upload-box:hover {
@@ -88,30 +123,30 @@ body {
   transform: scale(1.03);
 }
 
-/* 📁 File Input */
-input[type="file"] {
+/* 📁 FILE INPUT */
+input[type="file"], input[type="text"] {
   margin: 20px auto;
   display: block;
   font-size: 15px;
-  background-color: #fff;
+  background-color: var(--input-bg);
   border-radius: 10px;
   border: 1px solid #ccc;
   padding: 10px;
   width: 100%;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #000 !important;
+  color: var(--text-color);
   font-weight: 600;
 }
 
-input[type="file"]:hover {
+input[type="file"]:hover, input[type="text"]:hover {
   background-color: #f0f0f0;
   transform: scale(1.02);
 }
 
-/* 🧠 Upload Button */
-button {
-  background-color: #3c07ec;
+/* 🧠 BUTTONS */
+button, .back-btn {
+  background-color: var(--button-bg);
   color: white;
   font-size: 16px;
   border: none;
@@ -125,9 +160,103 @@ button {
 }
 
 button:hover, .back-btn:hover {
-  background-color: #43a047;
+  background: var(--button-hover);
   transform: scale(1.08);
   box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+
+/* 🌓 THEME TOGGLE BUTTON */
+.theme-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  background: var(--button-bg);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--button-hover);
+}
+
+/* 🎯 RESULT PAGE */
+.result-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 40px;
+  min-height: 100vh;
+  background: var(--bg-color);
+  color: var(--text-color);
+  background-size: 400% 400%;
+  animation: smoothGradient 25s ease infinite;
+  transition: background 2s ease, color 0.4s ease;
+}
+
+/* 🌬️ Breathing for result page in dark mode */
+body.dark-mode .result-page {
+  animation: smoothGradientDark 25s ease-in-out infinite;
+}
+
+body.dark-mode .result-container {
+  animation: breathing 6s ease-in-out infinite;
+}
+
+/* 🎯 RESULT CONTAINER */
+.result-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 420px;
+  margin: 30px auto;
+  padding: 20px 25px;
+  text-align: center;
+  background: var(--card-bg);
+  border-radius: 25px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  animation: fadeIn 1s ease;
+}
+
+/* 🖼️ IMAGE */
+.result-image {
+  max-width: 300px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 20px rgba(0,0,0,0.3);
+  margin-bottom: 15px;
+}
+
+/* 🌈 CONFIDENCE BAR */
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background: var(--progress-bar-bg);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 8px;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+}
+
+.progress {
+  height: 100%;
+  width: 0%;
+  border-radius: 10px;
+  background: var(--progress-fill);
+  transition: width 1s ease-in-out;
+}
+
+/* ✨ ANIMATIONS */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ⏳ Loader */
@@ -162,120 +291,3 @@ button:hover, .back-btn:hover {
   margin-top: 15px;
   font-weight: 500;
 }
-
-/* 🎯 Result Page */
-.result-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding-top: 40px;
-  min-height: 100vh;
-  font-family: 'Poppins', sans-serif;
-  color: #222;
-  background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb);
-  background-size: 400% 400%;
-  animation: breathe 12s ease infinite;
-}
-
-/* 🎯 Result Container */
-.result-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  width: 420px;
-  max-width: 350px;
-  margin: 30px auto;
-  padding: 20px 25px;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 25px;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-  animation: fadeIn 1s ease;
-  height: 1000px; /* adjust this as needed */
-}
-
-/* 🏷️ Result Title */
-.result-title {
-  color: #1a1a1a;
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
-}
-
-/* 🖼️ Image */
-.result-image {
-  max-width: 300px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 20px rgba(0,0,0,0.3);
-  margin-bottom: 15px;
-}
-
-/* 🔙 Back Button */
-.back-btn {
-  background-color: #3c07ec;
-  color: white;
-  font-size: 15px;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  cursor: pointer;
-  margin-top: 15px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-/* 🧩 Text Input */
-input[type="text"] {
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  width: 80%;
-  margin-top: 10px;
-}
-
-/* 🌈 Confidence Display */
-.result-box {
-  margin-top: 25px;
-  text-align: center;
-  color: #fff;
-  animation: fadeIn 1s ease;
-}
-
-.confidence-container {
-  margin-top: 15px;
-  font-size: 1rem;
-  color: #000;
-  text-align: left;
-}
-
-/* ✨ Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* 🌈 Confidence Progress Bar */
-.progress-bar {
-  width: 100%;
-  height: 20px; /* kept the larger one for better visibility */
-  background: rgba(0, 0, 0, 0.1); /* neutral subtle background */
-  border-radius: 10px;
-  overflow: hidden;
-  margin-top: 8px;
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-}
-
-/* Dynamic fill bar */
-.progress {
-  height: 100%;
-  width: 0%;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #00c6ff, #0072ff); /* nice default gradient */
-  transition: width 1s ease-in-out; /* smooth animation */
-}
-
-

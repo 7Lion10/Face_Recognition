@@ -29,3 +29,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+// 🌗 Theme Toggle
+document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.getElementById("theme-toggle");
+  const body = document.body;
+
+  // Load saved mode
+  if (localStorage.getItem("theme") === "dark") {
+    body.classList.add("dark-mode");
+    toggle.textContent = "🌙 Dark Mode";
+  } else {
+    toggle.textContent = "🌞 Light Mode";
+  }
+
+  toggle.addEventListener("click", () => {
+    body.classList.toggle("dark-mode");
+
+    if (body.classList.contains("dark-mode")) {
+      localStorage.setItem("theme", "dark");
+      toggle.textContent = "🌙 Dark Mode";
+    } else {
+      localStorage.setItem("theme", "light");
+      toggle.textContent = "🌞 Light Mode";
+    }
+  });
+});
