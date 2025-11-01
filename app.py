@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, Response
+from flask import Flask, render_template, request, redirect, url_for, Response, send_from_directory
 import os
 import cv2
 import time
@@ -6,11 +6,13 @@ import face_recognition
 import numpy as np
 from models.face_model import recognize_face, add_face, rename_face  # Custom functions
 
-app = Flask(__name__)
+# Initialize Flask app
+app = Flask(__name__, static_folder="static", template_folder="templates")
 
 # 📁 Folder paths
 UPLOAD_FOLDER = "static/uploads"
-KNOWN_FOLDER = "images"  # known faces folder
+KNOWN_FOLDER = "images"
+
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(KNOWN_FOLDER, exist_ok=True)
@@ -35,7 +37,6 @@ for file in os.listdir(KNOWN_FOLDER):
             print(f"⚠️ No face found in {file}")
 
 print(f"📸 Total known faces: {len(known_encodings)}")
-
 
 # ==============================
 # 🔹 Routes
@@ -68,6 +69,7 @@ def upload():
 
 @app.route("/add", methods=["POST"])
 def add_new_face():
+    """Add a new face to the database"""
     name = request.form["name"]
     image = request.form["image"]
     image_path = os.path.join(app.config["UPLOAD_FOLDER"], image)
@@ -82,6 +84,7 @@ def add_new_face():
 
 @app.route("/rename", methods=["POST"])
 def rename_existing_face():
+    """Rename an existing face"""
     old_name = request.form["old_name"]
     new_name = request.form["new_name"]
     image = request.form["image"]
@@ -98,17 +101,34 @@ def rename_existing_face():
 # ==============================
 # 🔹 Live Face Recognition Stream
 # ==============================
-camera = cv2.VideoCapture(0)
-if not camera.isOpened():
-    print("❌ Could not open webcam.")
+def get_camera():
+    """Try to access webcam safely (for local use only)"""
+    cam = cv2.VideoCapture(0)
+    if not cam.isOpened():
+        print("⚠️ Webcam not accessible (this is normal on Railway).")
+        return None
+    return cam
+
+
+camera = get_camera()
 
 
 def gen_frames():
     """Generate video frames with recognition overlay"""
+    if camera is None:
+        while True:
+            # Send a blank frame or a static image if webcam unavailable
+            blank = np.zeros((480, 640, 3), dtype=np.uint8)
+            cv2.putText(blank, "Webcam not available on Railway 🚫",
+                        (40, 240), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+            _, buffer = cv2.imencode('.jpg', blank)
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+        return
+
     process_every = 3
     frame_count = 0
     last_detected_time = time.time()
-    known = len(known_encodings) > 0
 
     color1 = np.array([0, 255, 255])  # Cyan
     color2 = np.array([255, 0, 255])  # Pink
@@ -143,7 +163,6 @@ def gen_frames():
                         name = known_names[best_match_index]
                 face_names.append(name)
 
-        # Draw boxes & names
         for (top, right, bottom, left), name in zip(face_locations, face_names):
             top *= 4; right *= 4; bottom *= 4; left *= 4
 
@@ -154,12 +173,10 @@ def gen_frames():
             cv2.putText(frame, name, (left + 10, bottom - 10),
                         cv2.FONT_HERSHEY_DUPLEX, 0.8, (255, 255, 255), 2)
 
-        # No face message after 10s
         if not face_encodings and time.time() - last_detected_time > 10:
             cv2.putText(frame, "No face detected 😕", (40, 60),
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
 
-        # Bottom banner
         h, w, _ = frame.shape
         cv2.rectangle(frame, (0, h - 50), (w, h), (20, 20, 20), -1)
         cv2.putText(frame, "Press 'q' to quit | Live Face Recognition Active",
@@ -178,7 +195,17 @@ def video_feed():
 
 
 # ==============================
+# 🔹 Serve Static Files
+# ==============================
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    """Ensure static files load correctly in Docker/Railway"""
+    return send_from_directory(app.static_folder, filename)
+
+
+# ==============================
 # 🔹 Run App
 # ==============================
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    port = int(os.environ.get("PORT", 8080))  # Railway uses dynamic ports
+    app.run(host="0.0.0.0", port=port, debug=False)
