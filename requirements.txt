@@ -1,13 +1,8 @@
 Flask
 Werkzeug
-opencv-python
+opencv-python-headless
 face-recognition
 face-recognition-models
 numpy
-tensorflow
-keras
 Pillow
-dlib
 gunicorn
-matplotlib
-scikit-learn
